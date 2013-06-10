@@ -17,33 +17,33 @@ ActiveRecord::Schema.define(:version => 20130509133203) do
     t.integer  "postid"
     t.string   "text"
     t.string   "user"
-    t.string   "rating"
-    t.string   "users_voted"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+    t.integer  "rating",      :default => 0
+    t.text     "users_voted", :default => "-1", :null => false
   end
 
   create_table "posts", :force => true do |t|
     t.string   "user"
     t.string   "title"
     t.string   "text"
-    t.string   "tags"
-    t.string   "rating"
-    t.string   "users_voted"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
+    t.text     "tags",        :default => "tag",   :null => false
+    t.integer  "rating",      :default => 0,       :null => false
+    t.text     "users_voted", :default => "admin", :null => false
   end
 
   create_table "users", :force => true do |t|
-    t.integer  "rating"
+    t.integer  "rating",      :default => 0
     t.string   "name"
     t.string   "surname"
     t.string   "username"
     t.string   "password"
     t.string   "favorites"
-    t.string   "users_voted"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+    t.text     "users_voted", :default => "-1", :null => false
   end
 
 end

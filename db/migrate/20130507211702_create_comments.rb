@@ -4,8 +4,8 @@ class CreateComments < ActiveRecord::Migration
     t.integer  :postid
     t.string   :text
     t.string   :user
-    t.integer   :rating
-    t.string   :users_voted
+    t.integer   :rating, :null => false
+    t.string   :users_voted, :default => '-1'
 
       t.timestamps
     end

@@ -5,8 +5,8 @@ class CreatePosts < ActiveRecord::Migration
     t.string   :title
     t.string   :text
     t.string   :tags
-    t.integer   :rating
-    t.string   :users_voted
+    t.integer   :rating, :null => false
+    t.string   :users_voted, :default => '-1'
 
       t.timestamps
     end
