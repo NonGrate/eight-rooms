@@ -1,0 +1,38 @@
+<html>
+	<head></head>
+	<body>
+		<p>hello blog (template!)</p>
+
+		<p>
+			<% for post in @pos -%>
+				<h3><a href = 'post/<%= post.id %>'><%= post.title %></a></h3>
+				<p>
+					<%= post.text %>
+					<br />
+					<br />
+					<i><small><%= post.user %> at <%= post.created_at %></small></i>
+					<br />
+					<%= form_tag(:controller => "main", :action => "delete_post", :postid => post.id) do %>
+						<%= submit_tag "Удалить" %>
+					<% end %>
+				</p>
+				<hr />
+			<% end %>
+			<p>
+				<%= form_tag(:controller => "main", :action => "create_post") do -%>
+					Название: <br />
+					<%= text_field_tag :title%>
+					<br />
+					Текст: <br />
+					<%= text_field_tag :text%>
+					<br />
+					Автор: <br />
+					<%= text_field_tag :user%>
+					<br />
+					<%= submit_tag "Создать пост" %>
+				<% end -%>
+			</p>
+		</p>
+
+	</body>
+</html>
