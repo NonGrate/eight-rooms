@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Register user</title>
+<meta charset="UTF-8">
+	<title>8Rooms - All</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script type="text/javascript">
+		function changeWidth(){
+			document.getElementById("resizable-div").style.width=(document.body.clientWidth-430)+"px";
+		}
+	</script>
+</head>
+<body onresize="changeWidth()">
+	<div class="main">
+		<header>
+			<%= image_tag "header.jpg", {:alt => "8Rooms"} %>
+		</header>
+		<nav class="menu">
+			<ul>
+				<% if (cookies[:user_name] == nil) %>
+				<li>
+					<a href="../log_in">Log in</a>/<a href="../register">Register</a>
+				</li>
+				<% else %>
+				<li>
+					<a href="../log_out">Log out</a>
+				</li>
+				<% end %>
+				<li><a href="../all"><div>Main page</div></a></li>
+				<% @values.each do |key, value| %>
+					<li><a href="../tag/<%= key %>"><div><%= key %></div></a></li>
+				<% end %>
+			</ul>
+		</nav>
+		<% if (cookies[:user_name] != nil) %>
+		<div class="right-panel">
+			<%= image_tag "nophoto.png", {:width => 120, :alt => "user-image"} %>
+			<h3><a href="../user/<%= params[:username] %>"><div><%= params[:username] %></div></a></h3>
+			<br />
+			<p>
+				<% @user = User.find(:first, :conditions => [ "username = ?", params[:username]]) %>
+				Rating: <%= @user.rating %><br />
+				Favorites<br />
+				<a href="../user/<%= params[:username] %>">Room</a><br /><br />
+				<% if(params[:username] != cookies[:user_name]) && cookies[:user_name] != nil %>
+					<a href="../rate_user/<%= cookies[:user_name] %>/<%= @user.id %>/+">+</a>
+					/<a href="../rate_user/<%= cookies[:user_name] %>/<%= @user.id %>/-">-</a>
+				<% end %>
+			</p>
+		</div>
+		<% end %>
+
+		<div class="content" id="resizable-div">
+		<script type="text/javascript">document.getElementById("resizable-div").style.width=(document.body.clientWidth-430)+"px";</script>
+		<% if (cookies[:user_name] != nil) %>
+		<section>
+			<%= form_tag(:controller => "main", :action => "create_post", :user => cookies[:user_name]) do %>
+				Заголовок: <br />
+				<%= text_field_tag :title%>
+				<br />
+				Текст: <br />
+				<%= text_field_tag :text%>
+				<br />
+				Tags: <br />
+				<%= text_field_tag :tags%>
+				<br />
+				<%= submit_tag "Create post" %>
+			<% end %>
+			<hr />
+		</section>
+		<% end %>
+		<% for post in @pos -%>
+			<section>
+				<h3><a href = '../post/<%= post.id %>'><%= post.title %></a></h3>
+				<%= post.text %>
+				<br />
+				<br />
+				<i><small><%= post.user %>. <%= post.tags %></small></i>
+				<br />
+				<% if(post.user == cookies[:user_name]) %>
+				<%= form_tag(:controller => "main", :action => "delete_post", :postid => post.id) do %>
+					<%= submit_tag "Delete" %>
+				<% end %>
+				<% end %>
+			</section>
+			<hr />
+		<% end %>
+		</div>
+
+	</div>
+</body>
+</html>

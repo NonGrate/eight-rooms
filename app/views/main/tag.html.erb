@@ -1,0 +1,135 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+	<title>8Rooms - All</title>
+	
+	<script type="text/javascript">
+		function changeWidth(){
+			document.getElementById("resizable-div").style.width=(document.body.clientWidth-440)+"px";
+		}
+
+		var xmlhttp=new XMLHttpRequest();
+		var responseText;
+
+		function ajaxLoad(obj){
+			xmlhttp.open("GET","../search_ajax?tag="+obj.value,false);
+			xmlhttp.send();
+			responseText=xmlhttp.responseText;
+			var string = responseText.substr(2, responseText.length-4);
+			var tags_array = string.split('","');
+			console.log(tags_array);
+			var items = document.getElementById("itemList");
+				while (items.firstChild) {
+	    			items.removeChild(items.firstChild);
+				}
+			if(tags_array.length > 0 && tags_array[0] != ""){
+				items.style.display = "inherit";
+				items.style.height = tags_array.length*30;
+				document.getElementById("searchbox-helper").style.display = "inherit";
+			    for (var i = 0; i < tags_array.length; i++) {
+			        var item = document.createElement("li");
+			        var anchor = document.createElement("a");
+			        var div = document.createElement("div");
+			        div.className = "innerDiv";
+			        div.innerHTML = tags_array[i];
+			        anchor.href = "/tag/"+tags_array[i];
+			        anchor.appendChild(div);
+			        item.appendChild(anchor);
+			        items.appendChild(item);
+			    }
+			}else{
+				items.style.display = 'none';
+				document.getElementById("searchbox-helper").style.display = "none";
+			}
+		}
+	</script>
+</head>
+<body onresize="changeWidth()">
+	<div class="main">
+		<header>
+			<%= image_tag "header.jpg", {:alt => "8Rooms"} %>
+			<div class="searchbox">
+				<%= form_tag(:controller => "main", :action => "search_ajax") do %>
+					<input type="text" id="searchbox-input" onkeyup="ajaxLoad(this)" />
+					<%= submit_tag "Search" %>
+				<% end %>
+				<div class="searchbox-helper" id="searchbox-helper">
+					<ul id="itemList">
+					</ul>
+				</div>
+			</div>
+		</header>
+		<nav class="menu">
+			<ul>
+				<% if (cookies[:user_name] == nil) %>
+				<li>
+					<a href="../log_in">Log in</a>/<a href="../register">Register</a>
+				</li>
+				<% else %>
+				<li>
+					<a href="../log_out">Log out</a>
+				</li>
+				<% end %>
+				<li><a href="../all"><div>Main page</div></a></li>
+				<% @values.each do |key, value| %>
+					<li><a href="../tag/<%= key %>"><div <% if (params[:tag].downcase == key.downcase) %> class="active" <% end %>><%= key %></div></a></li>
+				<% end %>
+			</ul>
+		</nav>
+		<% if (cookies[:user_name] != nil) %>
+		<div class="right-panel">
+			<%= image_tag "nophoto.png", {:width => 120, :alt => "user-image"} %>
+			<h3><a href="../user/<%= cookies[:user_name] %>"><div><%= cookies[:user_name] %></div></a></h3>
+			<br />
+			<p>
+				Rating: <%= User.find(:first, :conditions => [ "username = ?", cookies[:user_name]]).rating %><br />
+				Favorites<br />
+				<a href="../user/<%= cookies[:user_name] %>">Room</a>
+			</p>
+		</div>
+		<% end %>
+
+		<div class="content" id="resizable-div">
+		<script type="text/javascript">document.getElementById("resizable-div").style.width=(document.body.clientWidth-440)+"px";</script>
+		<% if (cookies[:user_name] != nil) %>
+		<section>
+			<%= form_tag(:controller => "main", :action => "create_post_tag", :user => cookies[:user_name], :tag => params[:tag]) do %>
+				Title: <br />
+				<%= text_field_tag :title%>
+				<br />
+				Text: <br />
+				<%= text_field_tag :text%>
+				<br />
+				Tags: <br />
+				<%= text_field_tag :tags%>
+				<br />
+				<%= submit_tag "Create post" %>
+			<% end %>
+			<% if params[:error] == "nothing" %>Error. All fields must be filled!<% end %>
+			<hr />
+		</section>
+		<% end %>
+		<% for post in @pos -%>
+			<section>
+				<h3><a href = 'post/<%= post.id %>'><%= post.title %></a> <%= post.rating%>
+										 <a href="../rate_post/<%= cookies[:user_name] %>/<%= post.id %>/+">+</a>
+										/<a href="../rate_post/<%= cookies[:user_name] %>/<%= post.id %>/-">-</a></h3>
+				<%= post.text %>
+				<br />
+				<br />
+				<i><small><a href="../user/<%= post.user %>"><%= post.user %></a>. <%= post.tags %></small></i>
+				<br />
+				<% if(post.user == cookies[:user_name]) %>
+				<%= form_tag(:controller => "main", :action => "delete_post", :postid => post.id) do %>
+					<%= submit_tag "Delete" %>
+				<% end %>
+				<% end %>
+			</section>
+			<hr />
+		<% end %>
+		</div>
+
+	</div>
+</body>
+</html>
