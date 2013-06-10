@@ -5,7 +5,7 @@ class CreatePosts < ActiveRecord::Migration
     t.string   :title
     t.string   :text
     t.string   :tags
-    t.string   :rating
+    t.integer   :rating
     t.string   :users_voted
 
       t.timestamps
